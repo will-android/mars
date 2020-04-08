@@ -42,6 +42,7 @@ WIN_COPY_EXT_FILES = {
             "mars/comm/windows/projdef.h": "comm/windows",
             "mars/comm/windows/sys/cdefs.h": "comm/windows/sys",
             "mars/comm/windows/sys/time.h": "comm/windows/sys",
+            "mars/comm/platform_comm.h": "comm",
 }
 
 XLOG_COPY_HEADER_FILES = {
@@ -64,6 +65,16 @@ XLOG_COPY_HEADER_FILES = {
             "mars/log/appender.h": "xlog",
             }      
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    
 def libtool_libs(src_libs, dst_lib):
     src_lib_str = ''
     for l in src_libs:
@@ -253,10 +264,10 @@ def check_ndk_env():
         print("Error: parse source.properties fail")
         return False
 
-    if ndk_revision[:4] >= "16.1" and ndk_revision[:4] < '16.2':
+    if ndk_revision[:4] >= "16.1":
         return True
 
-    print("Error: make sure ndk's version == r16b")
+    print("Error: make sure ndk's version >= r16b")
     return False
 
 html_css = '''

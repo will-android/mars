@@ -29,6 +29,7 @@
 #include "mars/comm/comm_data.h"
 #include "mars/stn/stn.h"
 #include "mars/stn/config.h"
+#include "mars/comm/socket/unix_socket.h"
 
 namespace mars {
 namespace stn  {
@@ -106,6 +107,12 @@ struct ConnectProfile {
         noop_profiles.clear();
         if (extension_ptr)
         		extension_ptr->Reset();
+        socket_fd = INVALID_SOCKET;
+        keepalive_timeout = 0;
+        is_reused_fd = false;
+        req_byte_count = 0;
+        cgi.clear();
+        ipv6_connect_failed = false;
     }
     
     std::string net_type;
@@ -144,6 +151,15 @@ struct ConnectProfile {
 
     boost::shared_ptr<ProfileExtension> extension_ptr;
     mars::comm::ProxyInfo proxy_info;
+
+    //keep alive config
+    SOCKET socket_fd;
+    uint32_t keepalive_timeout;
+    bool is_reused_fd;
+    int local_net_stack;
+    uint64_t req_byte_count;
+    std::string cgi;
+    bool ipv6_connect_failed;
 };
 
         
@@ -172,7 +188,7 @@ struct TransferProfile {
         error_code = 0;
     }
     
-    const Task& task;
+    const Task task; //change "const Task& task" to "const Task task". fix a memory reuse bug.
     ConnectProfile connect_profile;
     
     uint64_t loop_start_task_time;  // ms
@@ -222,6 +238,9 @@ struct TaskProfile {
         trycount++;
         
         uint64_t task_timeout = (readwritetimeout + 5 * 1000) * trycount;
+        if (_task.long_polling) {
+            task_timeout = (_task.long_polling_timeout + 5 * 1000);
+        }
         
         if (0 < _task.total_timetout &&  (uint64_t)_task.total_timetout < task_timeout)
             task_timeout = _task.total_timetout;
@@ -250,6 +269,7 @@ struct TaskProfile {
         err_type = kEctOK;
         err_code = 0;
         link_type = 0;
+        allow_sessiontimeout_retry = true;
     }
     
     void InitSendParam() {
@@ -296,6 +316,7 @@ struct TaskProfile {
     ErrCmdType err_type;
     int err_code;
     int link_type;
+    bool allow_sessiontimeout_retry;
 
     std::vector<TransferProfile> history_transfer_profiles;
 };

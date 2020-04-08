@@ -39,12 +39,17 @@ if(ANDROID)
 
     get_filename_component(EXPORT_XLOG_EXP_FILE libraries/mars_android_sdk/jni/export.exp ABSOLUTE)
 
-    target_link_libraries(${SELF_LIB_NAME} "-Wl,--gc-sections -Wl,--version-script=\"${EXPORT_XLOG_EXP_FILE}\""
-                            ${log-lib}
-                            ${z-lib}
+    set(SELF_XLOG_LINKER_FLAG "-Wl,--gc-sections -Wl,--version-script='${EXPORT_XLOG_EXP_FILE}'") 
+    if(ANDROID_ABI STREQUAL "x86_64" OR ANDROID_ABI STREQUAL "x86")
+        set(SELF_XLOG_LINKER_FLAG "-Wl,--gc-sections -Wl,--version-script='${EXPORT_XLOG_EXP_FILE}' -Wl,--no-warn-shared-textrel") 
+    endif()
+    target_link_libraries(${SELF_LIB_NAME} "${SELF_XLOG_LINKER_FLAG}"
                             xlog
                             mars-boost
-                            comm)
+                            comm
+                            ${log-lib}
+                            ${z-lib}
+                            )
  
     set(SELF_LIB_NAME marsstn)
 

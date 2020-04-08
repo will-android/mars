@@ -46,7 +46,7 @@ struct WifiInfo {
     std::string ssid;
     std::string bssid;
 };
-bool getCurWifiInfo(WifiInfo& _wifi_info);
+bool getCurWifiInfo(WifiInfo& _wifi_info, bool _force_refresh = false);
 
 struct SIMInfo {
     std::string isp_code;
@@ -240,7 +240,7 @@ float publiccomponent_GetSystemVersion();
 #endif
 
 #ifdef ANDROID
-bool startAlarm(int64_t id, int after);
+bool startAlarm(int type, int64_t id, int after);
 bool stopAlarm(int64_t id);
 
 void* wakeupLock_new();

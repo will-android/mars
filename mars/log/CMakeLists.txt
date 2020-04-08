@@ -51,23 +51,16 @@ elseif(ANDROID)
         
     list(APPEND SELF_SRC_FILES ${SELF_ANDROID_SRC_FILES})
 
-    # for micro-ecc
-    if(ANDROID_ABI MATCHES "^armeabi(-v7a)?$")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -marm")
-        if (CMAKE_VERSION VERSION_GREATER 3.7.0)
-            set(CMAKE_ANDROID_ARM_MODE arm)
-        endif()
-    endif()
-
     get_filename_component(EXPORT_EXP_FILE jni/export.exp ABSOLUTE)
     set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${EXPORT_EXP_FILE}")
 
 
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${SELF_SRC_FILES})
-install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION ${SELF_LIBS_OUT})
+# add_library(${PROJECT_NAME} STATIC ${SELF_SRC_FILES})
+# install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION ${SELF_LIBS_OUT})
 
+BuildWithUnitTest("${PROJECT_NAME}" "${SELF_SRC_FILES}")
 
 
     
