@@ -55,7 +55,7 @@ bool startAlarm(int type, int64_t id, int after) {
     ScopeJEnv scopeJEnv(cacheInstance->GetJvm());
     JNIEnv* env = scopeJEnv.GetEnv();
     jboolean ret = JNU_CallStaticMethodByMethodInfo(env, KPlatformCommC2Java_startAlarm, (jint)type, (jint)id, (jint)after).z;
-    xdebug2(TSF"id= %0, after= %1, ret= %2", id, after, (bool)ret);
+    xdebug2(TSF"id= %0, after= %1, type= %2, ret= %3", id, after, type, (bool)ret);
     return (bool)ret;
 }
 

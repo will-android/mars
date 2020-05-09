@@ -108,7 +108,7 @@ JNIEXPORT void JNICALL Java_com_tencent_mars_stn_StnLogic_setShortlinkSvrAddr
 
 	std::string debug_ip = (NULL == _debug_ip ? "" : ScopedJstring(_env, _debug_ip).GetChar());
 	SetShortlinkSvrAddr(_port, debug_ip);
-  
+
 }
 
 /*
@@ -201,7 +201,7 @@ JNIEXPORT void JNICALL Java_com_tencent_mars_stn_StnLogic_startTask
 
 	task.retry_count = retrycount;
 	task.server_process_cost = server_process_cost;
-	task.total_timetout = total_timetout;
+	task.total_timeout = total_timetout;
 	task.headers = headers;
 
 	// task.long_polling = long_polling;
@@ -341,6 +341,10 @@ JNIEXPORT void JNICALL Java_com_tencent_mars_stn_StnLogic_setClientVersion
 	mars::stn::SetClientVersion(_client_version);
 }
 
+JNIEXPORT jint JNICALL Java_com_tencent_mars_stn_StnLogic_genTaskID
+(JNIEnv *_env, jclass) {
+    return (jint)mars::stn::GenTaskID();
+}
 }
 
 void ExportSTN() {

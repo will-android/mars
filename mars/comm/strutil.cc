@@ -28,6 +28,7 @@
 #include <locale>
 
 #include "comm/xlogger/xlogger.h"
+#include "mars/openssl/include/openssl/md5.h"
 
 #ifdef WIN32
 #define snprintf _snprintf

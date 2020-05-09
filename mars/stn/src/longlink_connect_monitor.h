@@ -38,15 +38,17 @@ namespace mars {
 class LongLinkConnectMonitor {
 
   public:
-    LongLinkConnectMonitor(ActiveLogic& _activelogic, LongLink& _longlinkk, MessageQueue::MessageQueue_t _id);
+    LongLinkConnectMonitor(ActiveLogic& _activelogic, LongLink& _longlinkk, MessageQueue::MessageQueue_t _id, bool _is_keep_alive);
     ~LongLinkConnectMonitor();
 
   public:
     bool MakeSureConnected();
     bool NetworkChange();
+
     void OnHeartbeatAlarmSet(uint64_t _interval);
     void OnHeartbeatAlarmReceived(bool _is_noop_timeout);
 
+    void DisconnectAllSlot();
 
   public:
     boost::function<void ()> fun_longlink_reset_;
@@ -58,8 +60,8 @@ class LongLinkConnectMonitor {
   private:
     void __OnSignalForeground(bool _isforeground);
     void __OnSignalActive(bool _isactive);
-    void __OnLongLinkStatuChanged(LongLink::TLongLinkStatus _status);
-    void __OnAlarm();
+    void __OnLongLinkStatuChanged(LongLink::TLongLinkStatus _status, const std::string& _channel_id);
+    void __OnAlarm(bool _rebuild_longlink);
 
     void __Run();
 #ifdef __APPLE__
@@ -76,7 +78,8 @@ class LongLinkConnectMonitor {
     MessageQueue::ScopeRegister     asyncreg_;
     ActiveLogic& activelogic_;
     LongLink& longlink_;
-    Alarm         alarm_;
+    Alarm         rebuild_alarm_;
+    Alarm         wake_alarm_;
     Mutex         mutex_;
 
     LongLink::TLongLinkStatus status_;
@@ -88,6 +91,9 @@ class LongLinkConnectMonitor {
 
     int conti_suc_count_;
     bool isstart_;
+    bool is_keep_alive_;
+    int current_interval_index_;
+    bool rebuild_longlink_;
 };
         
 } }
